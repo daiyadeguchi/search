@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -33,9 +34,11 @@ int main(int argc, char *argv[])
 		FILE *f = fdopen(fd, "r");
 		char line[1024];
 		int line_n = 1;
-		printf("filename: %s\n", entry->d_name);
 		while (fgets(line, sizeof(line), f)) {
-			printf("%d %s", line_n, line);
+			char *p = strstr(line, searchString);
+			if (p) {
+				printf("%s:%d	%s", entry->d_name, line_n, line);	
+			}
 			line_n++;
 		}
 		printf("\n");
