@@ -24,6 +24,17 @@ int main(int argc, char *argv[])
 	}
 
 	while ((entry = readdir(dir)) != NULL) {
+		if (entry->d_type == DT_DIR) {
+			DIR *dir_in_dir = opendir(entry->d_name);
+			if (dir == NULL) {
+				perror("unable to open directory");
+				return 1;
+			}
+			while ((entry = readdir(dir_in_dir)) != NULL) {
+				find_word(entry, searchString);
+			}
+			continue;
+		}
 		find_word(entry, searchString);
 	}
 	closedir(dir);
@@ -36,7 +47,7 @@ void find_word(const struct dirent *entry, const char *searchString)
 	if (entry->d_name[0] == '.') {
 		return;
 	}
-	printf("%s\n", entry->d_name);
+
 	int fd = open(entry->d_name, O_RDONLY);
 	if (fd < 0) {
 		perror("open");
@@ -46,7 +57,7 @@ void find_word(const struct dirent *entry, const char *searchString)
 	FILE *f = fdopen(fd, "r");
 	char line[1024];
 	int line_n = 1;
-	while (fgets(line, sizeof(line), f)) {
+	while (fgets(line, sizeof(line), f)) { 
 		char *p = strstr(line, searchString);
 		if (p) {
 			printf("%s:%d	%s", entry->d_name, line_n, line);	
