@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 	}
 
 	char *searchString = argv[1];
+
 	struct dirent *entry;
 	DIR *dir = opendir(".");
 	if (dir == NULL) {
@@ -32,11 +33,12 @@ int main(int argc, char *argv[])
 		FILE *f = fdopen(fd, "r");
 		char line[1024];
 		int line_n = 1;
+		printf("filename: %s\n", entry->d_name);
 		while (fgets(line, sizeof(line), f)) {
 			printf("%d %s", line_n, line);
 			line_n++;
 		}
-
+		printf("\n");
 		close(fd);
 	}
 	closedir(dir);
